@@ -87,11 +87,11 @@ int soundPlay = 0;  // holds track number of last sound file played
 
 // structure to hold the payload 10bytes
 struct payload_r {
-  unsigned int sreg;
-  int j_RUD;
-  int j_RLR;
-  int j_LUD;
-  int j_LLR;
+  uint16_t sreg;
+  int16_t j_RUD;
+  int16_t j_RLR;
+  int16_t j_LUD;
+  int16_t j_LLR;
 };
 
 /* NRF 24L01+ pin connections for Mega
