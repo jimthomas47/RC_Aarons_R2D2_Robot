@@ -58,6 +58,7 @@ const uint16_t BUTTON_SHOULDER_LEFT_TOP     = 0x1000;
 const uint16_t BUTTON_SHOULDER_LEFT_BOTTOM  = 0x2000;
 const uint16_t BUTTON_ANALOG_LEFT           = 0x4000;
 // Unused                                     0x8000
+const uint16_t UNUSED_SREGISTER             = 0x8080;
 
 uint16_t PreviousSreg = 0x0000;
 
@@ -226,6 +227,9 @@ void loop(void) {
 
   if (radio.available()) {
     radio.read(&payload, sizeof(payload));
+
+    // Defensively exclude unused bits from sregister.
+    payload.sreg &= ~UNUSED_SREGISTER;
   }
 
   //Serial.println(payload.sreg,BIN);
