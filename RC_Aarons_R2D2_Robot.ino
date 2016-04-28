@@ -43,21 +43,23 @@ JQ6500_Serial mp3(31, 30);
 int joystick[3];
 
 // masks for each buttons in s_register
-const int R1Mask = 0x10;
-const int R2Mask = 0x20;
-const int L1Mask = 0x1000;
-const int L2Mask = 0x2000;
-const int RPushMask = 0x40;
-const int LPushMask = 0x4000;
-const int B1Mask = 0x100;
-const int B2Mask = 0x200;
-const int B3Mask = 0x400;
-const int B4Mask = 0x800;
-const int LLMask = 0x1;
-const int LRMask = 0x2;
-const int LDMask = 0x4;
-const int LUMask = 0x8;
-const int PushMask = 0x4040; // push either joystick
+const uint16_t LLMask    = 0x0001;
+const uint16_t LRMask    = 0x0002;
+const uint16_t LDMask    = 0x0004;
+const uint16_t LUMask    = 0x0008;
+const uint16_t R1Mask    = 0x0010;
+const uint16_t R2Mask    = 0x0020;
+const uint16_t RPushMask = 0x0040;
+// Unused                  0x0080
+const uint16_t B1Mask    = 0x0100;
+const uint16_t B2Mask    = 0x0200;
+const uint16_t B3Mask    = 0x0400;
+const uint16_t B4Mask    = 0x0800;
+const uint16_t L1Mask    = 0x1000;
+const uint16_t L2Mask    = 0x2000;
+const uint16_t LPushMask = 0x4000;
+// Unused                  0x8000
+const uint16_t PushMask  = LPushMask | RPushMask; // push either joystick
 
 uint16_t PreviousSreg = 0x0000;
 
