@@ -171,8 +171,7 @@ const int busyPin = 31;
   4th parameter: Busy pin number.
 */
 
-void setup(void)
-{
+void setup(void) {
   Serial.begin(9600);
   printf_begin();
 
@@ -232,356 +231,327 @@ void setup(void)
   mp3.playFileByIndexNumber(9);
 }
 
-void loop(void)
-{
-
+void loop(void) {
   int x, y;
-  payload_r payload = {
-    0, 0, 0, 0, 0
-  };  // 10 byte payload
-  if ( radio.available() )
-  {
+  payload_r payload = {0, 0, 0, 0, 0};
 
-    //      done = radio.read(&payload, sizeof(payload));
+  if (radio.available()) {
     radio.read(&payload, sizeof(payload));
+  }
 
-    //Serial.println(payload.sreg,BIN);
-    // printf(" %4i %4i %4i %4i ",payload.j_RUD,payload.j_RLR,payload.j_LUD,payload.j_LLR);
-    // printf("\n");
+  //Serial.println(payload.sreg,BIN);
+  // printf(" %4i %4i %4i %4i ",payload.j_RUD,payload.j_RLR,payload.j_LUD,payload.j_LLR);
+  // printf("\n");
 
-    // R2D2: LEFT joystick controls  drive motors,  -255 to 255
-    // note: j_LLR value comes in inversed
+  // R2D2: LEFT joystick controls  drive motors,  -255 to 255
+  // note: j_LLR value comes in inversed
 
-    // diagonal drive
-    //joystick[0] = -payload.j_RLR;
-    //joystick[1] = payload.j_RUD;
+  // diagonal drive
+  //joystick[0] = -payload.j_RLR;
+  //joystick[1] = payload.j_RUD;
 
-    // quantize joystick values 0-6
+  // quantize joystick values 0-6
 
-    if (-payload.j_RLR < -200)     x = 0;
-    else if (-payload.j_RLR < -150)x = 1;
-    else if (-payload.j_RLR < -10) x = 2;
-    else if (-payload.j_RLR < 10)  x = 3;
-    else if (-payload.j_RLR < 150) x = 4;
-    else if (-payload.j_RLR < 200) x = 5;
-    else x = 6;
+  if (-payload.j_RLR < -200)     x = 0;
+  else if (-payload.j_RLR < -150)x = 1;
+  else if (-payload.j_RLR < -10) x = 2;
+  else if (-payload.j_RLR < 10)  x = 3;
+  else if (-payload.j_RLR < 150) x = 4;
+  else if (-payload.j_RLR < 200) x = 5;
+  else x = 6;
 
-    if (payload.j_RUD < -200)     y = 0;
-    else if (payload.j_RUD < -150)y = 1;
-    else if (payload.j_RUD < -10) y = 2;
-    else if (payload.j_RUD < 10)  y = 3;
-    else if (payload.j_RUD < 150) y = 4;
-    else if (payload.j_RUD < 200) y = 5;
-    else y = 6;
+  if (payload.j_RUD < -200)     y = 0;
+  else if (payload.j_RUD < -150)y = 1;
+  else if (payload.j_RUD < -10) y = 2;
+  else if (payload.j_RUD < 10)  y = 3;
+  else if (payload.j_RUD < 150) y = 4;
+  else if (payload.j_RUD < 200) y = 5;
+  else y = 6;
 
-    // lookup motor power values from the motor power table
-    joystick[0] = LmotorPower[y][x];
-    joystick[1] = RmotorPower[y][x];
+  // lookup motor power values from the motor power table
+  joystick[0] = LmotorPower[y][x];
+  joystick[1] = RmotorPower[y][x];
 
-    Serial.print(joystick[0]);
-    Serial.print(' ');
-    Serial.println(joystick[1]);
+  Serial.print(joystick[0]);
+  Serial.print(' ');
+  Serial.println(joystick[1]);
 
-    // R2D2 Head turn
-    joystick[2] = payload.j_LLR / 2;
+  // R2D2 Head turn
+  joystick[2] = payload.j_LLR / 2;
 
-    uint16_t buttons = payload.sreg & ~PreviousSreg;
-    PreviousSreg = payload.sreg;
+  uint16_t buttons = payload.sreg & ~PreviousSreg;
+  PreviousSreg = payload.sreg;
 
-    if (buttons & B1Mask) {
-      mp3.playFileByIndexNumber(1);
-    }
+  if (buttons & B1Mask) {
+    mp3.playFileByIndexNumber(1);
+  }
 
-    if (buttons & B2Mask) {
-      mp3.playFileByIndexNumber(5);
-    }
+  if (buttons & B2Mask) {
+    mp3.playFileByIndexNumber(5);
+  }
 
-    if (buttons & B3Mask) {
-      mp3.playFileByIndexNumber(6);
-    }
+  if (buttons & B3Mask) {
+    mp3.playFileByIndexNumber(6);
+  }
 
-    if (buttons & B4Mask) {
-      mp3.playFileByIndexNumber(7);
-    }
+  if (buttons & B4Mask) {
+    mp3.playFileByIndexNumber(7);
+  }
 
-    if (buttons & R2Mask) {
-      mp3.playFileByIndexNumber(3);
-    }
+  if (buttons & R2Mask) {
+    mp3.playFileByIndexNumber(3);
+  }
 
-    if (buttons & L2Mask) {
-      mp3.playFileByIndexNumber(4);
-    }
+  if (buttons & L2Mask) {
+    mp3.playFileByIndexNumber(4);
+  }
 
-    if (buttons & LUMask) {
-      mp3.playFileByIndexNumber(2);
-    }
+  if (buttons & LUMask) {
+    mp3.playFileByIndexNumber(2);
+  }
 
-    if (buttons & LLMask) {
-      mp3.playFileByIndexNumber(10);
-    }
+  if (buttons & LLMask) {
+    mp3.playFileByIndexNumber(10);
+  }
 
-    if (buttons & LDMask) {
-      mp3.playFileByIndexNumber(11);
-    }
+  if (buttons & LDMask) {
+    mp3.playFileByIndexNumber(11);
+  }
 
-    if (buttons & LRMask) {
-      mp3.playFileByIndexNumber(12);
-    }
+  if (buttons & LRMask) {
+    mp3.playFileByIndexNumber(12);
+  }
 
-    if (buttons & L1Mask) {
-      mp3.playFileByIndexNumber(8);
-    }
+  if (buttons & L1Mask) {
+    mp3.playFileByIndexNumber(8);
+  }
 
-    if (buttons & R1Mask) {
-      mp3.playFileByIndexNumber(9);
-    }
+  if (buttons & R1Mask) {
+    mp3.playFileByIndexNumber(9);
+  }
 
-    /*
-        // LED Spot Light On / Off
-        if (LUMask & payload.sreg) {
-          if (SpotButton == false) { //  button low to transition so toggle the spot
-            SpotButton = true;
-            if (SpotOn == true) {
-              SpotOn = false;
-              digitalWrite (SpotPin, LOW);
-            }
-            else {
-              SpotOn = true;
-              digitalWrite (SpotPin, HIGH);
-            }
-          }
-        }
-        else {
-          SpotButton = false;
-        }
-
-        // Blue Rotation Light On / Off
-        if (LRMask & payload.sreg) {
-          if (RotButton == false) { //  button low to transition so toggle the spot
-            RotButton = true;
-            if (RotOn == true) {
-              RotOn = false;
-              digitalWrite (RotPin, LOW);
-            }
-            else {
-              RotOn = true;
-              digitalWrite (RotPin, HIGH);
-            }
-          }
-        }
-        else {
-          RotButton = false;
-        }
-
-        // Robot Eyes On / Off
-        if (LLMask & payload.sreg) {
-          if (EyesButton == false) { //  button low to transition so toggle the spot
-            EyesButton = true;
-            if (EyesOn == true) {
-              EyesOn = false;
-              (RightEyeLed, LOW);
-              digitalWrite(LeftEyeLed, LOW);
-            }
-            else {
-              EyesOn = true;
-              digitalWrite(RightEyeLed, HIGH);
-              digitalWrite(LeftEyeLed, HIGH);
-            }
-          }
-        }
-        else {
-          EyesButton = false;
-        }
-
-        // LED Spot Light servo
-        SpotAngle = (payload.j_LLR + 255) / 3; // 0 to 180ish
-        servo1.write(SpotAngle);
-
-
-        // Arm Servo L1 button decreases angle, L2 button increases angle
-        // 0 all up, 180 all down
-        if (L2Mask & payload.sreg) {
-          if (ArmAngle + ArmIncrement < 180) {
-            ArmAngle = ArmAngle + ArmIncrement;
-            servo2.write(ArmAngle);
-          }
-        }
-        if (L1Mask & payload.sreg) {
-          if (ArmAngle - ArmIncrement > 0) {
-            ArmAngle = ArmAngle - ArmIncrement;
-            servo2.write(ArmAngle);
-          }
-        }
-    */
-    // Serial.print(joystick[0]);
-    // Serial.print(' ');
-    // Serial.println(joystick[1]);
-
-
-    // left (port) motor
-    if (joystick[0] > 0) {      // forward
-      analogWrite(LmotorPinF, joystick[0]);
-      digitalWrite(LmotorPinR, LOW);
-    }
-    else if (joystick[0] < 0) { //reverse
-      digitalWrite(LmotorPinF, LOW);
-      analogWrite(LmotorPinR, -joystick[0]);
-    }
-    else {
-      digitalWrite(LmotorPinF, LOW); // stopped
-      digitalWrite(LmotorPinR, LOW);
-    }
-    // right (starbord) motor
-    if (joystick[1] > 0) {      // forward
-      analogWrite(RmotorPinF, joystick[1]);
-      digitalWrite(RmotorPinR, LOW);
-    }
-    else if (joystick[1] < 0) { //reverse
-      digitalWrite(RmotorPinF, LOW);
-      analogWrite(RmotorPinR, -joystick[1]);
-    }
-    else {
-      digitalWrite(RmotorPinF, LOW); // stopped
-      digitalWrite(RmotorPinR, LOW);
-    }
-
-    //R2D2 Head motor
-    if (joystick[2] >= 0) {
-      analogWrite(HmotorPinF, joystick[2]);
-      digitalWrite(HmotorPinR, LOW);
-    }
-    else {
-      digitalWrite(HmotorPinF, LOW);
-      analogWrite(HmotorPinR, -joystick[2]);
-    }
-    /*
-        // shoot disk motors
-        if (R1Mask & payload.sreg) {
-          digitalWrite(SpinMotor, HIGH);
-          digitalWrite(ShootMotor, HIGH);
-        }
-        else {
-          digitalWrite(SpinMotor, LOW);
-          digitalWrite(ShootMotor, LOW);
-        }
-
-        // Hand LEDs
-        if (R2Mask & payload.sreg) {
-          if (lcount == 16) {
-            count += 1;
-            lcount = 0;
-          } else {
-            lcount += 1;
-          }
-          if (count > 3) {
-            count = 1;
-          }
-          //  tone (SpeakerPin, LaserTone);
-          //  LaserTone += 150;
-          //  if (LaserTone > 2000) {
-          //   LaserTone = 60;
-          //}
-          if (count == 1) {
-            digitalWrite(HandLED1, LOW);
+  /*
+      // LED Spot Light On / Off
+      if (LUMask & payload.sreg) {
+        if (SpotButton == false) { //  button low to transition so toggle the spot
+          SpotButton = true;
+          if (SpotOn == true) {
+            SpotOn = false;
+            digitalWrite (SpotPin, LOW);
           }
           else {
-            digitalWrite(HandLED1, HIGH);
+            SpotOn = true;
+            digitalWrite (SpotPin, HIGH);
           }
-          if (count == 2) {
-            digitalWrite(HandLED2, LOW);
-          }
-          else {
-            digitalWrite(HandLED2, HIGH);
-          }
-          if (count == 3) {
-            digitalWrite(HandLED3, LOW);
-          }
-          else {
-            digitalWrite(HandLED3, HIGH);
-          }
-          delay (2);
-          //  noTone (SpeakerPin);
         }
-        else {
+      }
+      else {
+        SpotButton = false;
+      }
+
+      // Blue Rotation Light On / Off
+      if (LRMask & payload.sreg) {
+        if (RotButton == false) { //  button low to transition so toggle the spot
+          RotButton = true;
+          if (RotOn == true) {
+            RotOn = false;
+            digitalWrite (RotPin, LOW);
+          }
+          else {
+            RotOn = true;
+            digitalWrite (RotPin, HIGH);
+          }
+        }
+      }
+      else {
+        RotButton = false;
+      }
+
+      // Robot Eyes On / Off
+      if (LLMask & payload.sreg) {
+        if (EyesButton == false) { //  button low to transition so toggle the spot
+          EyesButton = true;
+          if (EyesOn == true) {
+            EyesOn = false;
+            (RightEyeLed, LOW);
+            digitalWrite(LeftEyeLed, LOW);
+          }
+          else {
+            EyesOn = true;
+            digitalWrite(RightEyeLed, HIGH);
+            digitalWrite(LeftEyeLed, HIGH);
+          }
+        }
+      }
+      else {
+        EyesButton = false;
+      }
+
+      // LED Spot Light servo
+      SpotAngle = (payload.j_LLR + 255) / 3; // 0 to 180ish
+      servo1.write(SpotAngle);
+
+
+      // Arm Servo L1 button decreases angle, L2 button increases angle
+      // 0 all up, 180 all down
+      if (L2Mask & payload.sreg) {
+        if (ArmAngle + ArmIncrement < 180) {
+          ArmAngle = ArmAngle + ArmIncrement;
+          servo2.write(ArmAngle);
+        }
+      }
+      if (L1Mask & payload.sreg) {
+        if (ArmAngle - ArmIncrement > 0) {
+          ArmAngle = ArmAngle - ArmIncrement;
+          servo2.write(ArmAngle);
+        }
+      }
+  */
+  // Serial.print(joystick[0]);
+  // Serial.print(' ');
+  // Serial.println(joystick[1]);
+
+
+  // left (port) motor
+  if (joystick[0] > 0) {      // forward
+    analogWrite(LmotorPinF, joystick[0]);
+    digitalWrite(LmotorPinR, LOW);
+  }
+  else if (joystick[0] < 0) { //reverse
+    digitalWrite(LmotorPinF, LOW);
+    analogWrite(LmotorPinR, -joystick[0]);
+  }
+  else {
+    digitalWrite(LmotorPinF, LOW); // stopped
+    digitalWrite(LmotorPinR, LOW);
+  }
+  // right (starbord) motor
+  if (joystick[1] > 0) {      // forward
+    analogWrite(RmotorPinF, joystick[1]);
+    digitalWrite(RmotorPinR, LOW);
+  }
+  else if (joystick[1] < 0) { //reverse
+    digitalWrite(RmotorPinF, LOW);
+    analogWrite(RmotorPinR, -joystick[1]);
+  }
+  else {
+    digitalWrite(RmotorPinF, LOW); // stopped
+    digitalWrite(RmotorPinR, LOW);
+  }
+
+  //R2D2 Head motor
+  if (joystick[2] >= 0) {
+    analogWrite(HmotorPinF, joystick[2]);
+    digitalWrite(HmotorPinR, LOW);
+  }
+  else {
+    digitalWrite(HmotorPinF, LOW);
+    analogWrite(HmotorPinR, -joystick[2]);
+  }
+  /*
+      // shoot disk motors
+      if (R1Mask & payload.sreg) {
+        digitalWrite(SpinMotor, HIGH);
+        digitalWrite(ShootMotor, HIGH);
+      }
+      else {
+        digitalWrite(SpinMotor, LOW);
+        digitalWrite(ShootMotor, LOW);
+      }
+
+      // Hand LEDs
+      if (R2Mask & payload.sreg) {
+        if (lcount == 16) {
+          count += 1;
+          lcount = 0;
+        } else {
+          lcount += 1;
+        }
+        if (count > 3) {
+          count = 1;
+        }
+        //  tone (SpeakerPin, LaserTone);
+        //  LaserTone += 150;
+        //  if (LaserTone > 2000) {
+        //   LaserTone = 60;
+        //}
+        if (count == 1) {
           digitalWrite(HandLED1, LOW);
-          digitalWrite(HandLED2, LOW);
-          digitalWrite(HandLED3, LOW);
-          // LaserTone = 60;
         }
-         \
+        else {
+          digitalWrite(HandLED1, HIGH);
+        }
+        if (count == 2) {
+          digitalWrite(HandLED2, LOW);
+        }
+        else {
+          digitalWrite(HandLED2, HIGH);
+        }
+        if (count == 3) {
+          digitalWrite(HandLED3, LOW);
+        }
+        else {
+          digitalWrite(HandLED3, HIGH);
+        }
+        delay (2);
+        //  noTone (SpeakerPin);
+      }
+      else {
+        digitalWrite(HandLED1, LOW);
+        digitalWrite(HandLED2, LOW);
+        digitalWrite(HandLED3, LOW);
+        // LaserTone = 60;
+      }
+       \
 
-        // Play sound tracks from the sound card
+      // Play sound tracks from the sound card
 
 
 
 
 
-        /*
-          soundfile = random(79);
-          if (LDMask & payload.sreg) {
-          wtv020sd16p.stopVoice();
-          wtv020sd16p.asyncPlayVoice(soundfile);
-          Serial.print("Now playing sound file #: ");
-          Serial.println(soundfile);
-          }
-          else {
-          if (B1Mask & payload.sreg) {
-            tone (SpeakerPin, 523);
-            delay (10);
-            noTone (SpeakerPin);
-          }
-          else {
-            noTone (SpeakerPin) ;
-          }
-          if (B2Mask & payload.sreg) {
-            tone (SpeakerPin, 587);
-            delay (10);
-            noTone (SpeakerPin);
-          }
-          else {
-            noTone (SpeakerPin) ;
-          }
-          if (B3Mask & payload.sreg) {
-            tone (SpeakerPin, 659);
-            delay (10);
-            noTone (SpeakerPin);
-          }
-          else {
-            noTone (SpeakerPin) ;
-          }
-          if (B4Mask & payload.sreg) {
-            tone (SpeakerPin, 698);
-            delay (10);
-            noTone (SpeakerPin);
-          }
-          else {
-            noTone (SpeakerPin) ;
-          }
+      /*
+        soundfile = random(79);
+        if (LDMask & payload.sreg) {
+        wtv020sd16p.stopVoice();
+        wtv020sd16p.asyncPlayVoice(soundfile);
+        Serial.print("Now playing sound file #: ");
+        Serial.println(soundfile);
+        }
+        else {
+        if (B1Mask & payload.sreg) {
+          tone (SpeakerPin, 523);
+          delay (10);
           noTone (SpeakerPin);
-          }
-    */
-
-  }
-  else
-  {
-    AllStop();
-    // Serial.println("No radio available");
-    //delay (1000);
-  }
-  //delay (100);
+        }
+        else {
+          noTone (SpeakerPin) ;
+        }
+        if (B2Mask & payload.sreg) {
+          tone (SpeakerPin, 587);
+          delay (10);
+          noTone (SpeakerPin);
+        }
+        else {
+          noTone (SpeakerPin) ;
+        }
+        if (B3Mask & payload.sreg) {
+          tone (SpeakerPin, 659);
+          delay (10);
+          noTone (SpeakerPin);
+        }
+        else {
+          noTone (SpeakerPin) ;
+        }
+        if (B4Mask & payload.sreg) {
+          tone (SpeakerPin, 698);
+          delay (10);
+          noTone (SpeakerPin);
+        }
+        else {
+          noTone (SpeakerPin) ;
+        }
+        noTone (SpeakerPin);
+        }
+  */
 }
-
-// All Stop - loss of signal -- turn off everything that moves
-void AllStop () {
-  digitalWrite(RmotorPinF, LOW);
-  digitalWrite(RmotorPinR, LOW);
-  digitalWrite(LmotorPinF, LOW);
-  digitalWrite(LmotorPinF, LOW);
-
-
-  digitalWrite(HandLED1, LOW);
-  digitalWrite(HandLED2, LOW);
-  digitalWrite(HandLED3, LOW);
-
-}
-
