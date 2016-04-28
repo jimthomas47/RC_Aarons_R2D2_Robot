@@ -242,7 +242,7 @@ void setup(void)
   radio.startListening();
   radio.printDetails();
 
-  playSound(9);
+  mp3.playFileByIndexNumber(9);
 }
 
 void loop(void)
@@ -301,7 +301,7 @@ void loop(void)
     // B1 button
     if (B1Mask & payload.sreg) {  // button pressed
       if (B1Flag == false) { // just got pressed, play the song
-        playSound(1);
+        mp3.playFileByIndexNumber(1);
         B1Flag = true; // set the flag showing button was pressed
       }
     } else {  // button is released reset the flag
@@ -310,7 +310,7 @@ void loop(void)
     // R2D2 on B2 button
     if (B2Mask & payload.sreg) {  // button pressed
       if (B2Flag == false) { // just got pressed, play the song
-        playSound(5);
+        mp3.playFileByIndexNumber(5);
         B2Flag = true; // set the flag showing button was pressed
       }
     } else {  // button is released reset the flag
@@ -319,7 +319,7 @@ void loop(void)
     // drum solos on B3 button
     if (B3Mask & payload.sreg) {  // button pressed
       if (B3Flag == false) { // just got pressed, play the song
-        playSound(6);
+        mp3.playFileByIndexNumber(6);
         B3Flag = true; // set the flag showing button was pressed
       }
     } else {  // button is released reset the flag
@@ -328,7 +328,7 @@ void loop(void)
     // random voices on B4 button
     if (B4Mask & payload.sreg) {  // button pressed
       if (B4Flag == false) { // just got pressed, play the song
-        playSound(7);
+        mp3.playFileByIndexNumber(7);
         B4Flag = true; // set the flag showing button was pressed
       }
     } else {  // button is released reset the flag
@@ -337,7 +337,7 @@ void loop(void)
     //
     if (R2Mask & payload.sreg) {  // button pressed
       if (R2Flag == false) { // just got pressed, play the song
-        playSound(3);
+        mp3.playFileByIndexNumber(3);
         R2Flag = true; // set the flag showing button was pressed
       }
     } else {  // button is released reset the flag
@@ -345,7 +345,7 @@ void loop(void)
     }
     if (L2Mask & payload.sreg) {  // button pressed
       if (L2Flag == false) { // just got pressed, play the song
-        playSound(4);
+        mp3.playFileByIndexNumber(4);
         L2Flag = true; // set the flag showing button was pressed
       }
     } else {  // button is released reset the flag
@@ -354,7 +354,7 @@ void loop(void)
 
     if (LUMask & payload.sreg) {  // button pressed
       if (LUFlag == false) { // just got pressed, play the song
-        playSound(2);
+        mp3.playFileByIndexNumber(2);
         LUFlag = true; // set the flag showing button was pressed
       }
     } else {  // button is released reset the flag
@@ -363,7 +363,7 @@ void loop(void)
 
     if (LLMask & payload.sreg) {  // button pressed
       if (LLFlag == false) { // just got pressed, play the song
-        playSound(10);
+        mp3.playFileByIndexNumber(10);
         LLFlag = true; // set the flag showing button was pressed
       }
     } else {  // button is released reset the flag
@@ -372,7 +372,7 @@ void loop(void)
 
 if (LDMask & payload.sreg) {  // button pressed
       if (LDFlag == false) { // just got pressed, play the song
-        playSound(11);
+        mp3.playFileByIndexNumber(11);
         LDFlag = true; // set the flag showing button was pressed
       }
     } else {  // button is released reset the flag
@@ -381,7 +381,7 @@ if (LDMask & payload.sreg) {  // button pressed
     
 if (LRMask & payload.sreg) {  // button pressed
       if (LRFlag == false) { // just got pressed, play the song
-        playSound(12);
+        mp3.playFileByIndexNumber(12);
         LRFlag = true; // set the flag showing button was pressed
       }
     } else {  // button is released reset the flag
@@ -390,7 +390,7 @@ if (LRMask & payload.sreg) {  // button pressed
 
     if (L1Mask & payload.sreg) {  // button pressed
       if (L1Flag == false) { // just got pressed, play the song
-        playSound(8);
+        mp3.playFileByIndexNumber(8);
         L1Flag = true; // set the flag showing button was pressed
       }
     } else {  // button is released reset the flag
@@ -398,7 +398,7 @@ if (LRMask & payload.sreg) {  // button pressed
     }
     if (R1Mask & payload.sreg) {  // button pressed
       if (R1Flag == false) { // just got pressed, play the song
-        playSound(9);
+        mp3.playFileByIndexNumber(9);
         R1Flag = true; // set the flag showing button was pressed
       }
     } else {  // button is released reset the flag
@@ -651,11 +651,5 @@ void AllStop () {
   digitalWrite(HandLED2, LOW);
   digitalWrite(HandLED3, LOW);
 
-}
-
-void playSound(unsigned int fileNumber) {
-  if (mp3.getStatus() != MP3_STATUS_PLAYING) {
-    mp3.playFileByIndexNumber(fileNumber);
-  }
 }
 
