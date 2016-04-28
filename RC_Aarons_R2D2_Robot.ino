@@ -370,7 +370,7 @@ void loop(void)
       LLFlag = false;
     }
 
-if (LDMask & payload.sreg) {  // button pressed
+    if (LDMask & payload.sreg) {  // button pressed
       if (LDFlag == false) { // just got pressed, play the song
         mp3.playFileByIndexNumber(11);
         LDFlag = true; // set the flag showing button was pressed
@@ -378,8 +378,8 @@ if (LDMask & payload.sreg) {  // button pressed
     } else {  // button is released reset the flag
       LDFlag = false;
     }
-    
-if (LRMask & payload.sreg) {  // button pressed
+
+    if (LRMask & payload.sreg) {  // button pressed
       if (LRFlag == false) { // just got pressed, play the song
         mp3.playFileByIndexNumber(12);
         LRFlag = true; // set the flag showing button was pressed
@@ -522,111 +522,111 @@ if (LRMask & payload.sreg) {  // button pressed
       digitalWrite(HmotorPinF, LOW);
       analogWrite(HmotorPinR, -joystick[2]);
     }
-/*
-    // shoot disk motors
-    if (R1Mask & payload.sreg) {
-      digitalWrite(SpinMotor, HIGH);
-      digitalWrite(ShootMotor, HIGH);
-    }
-    else {
-      digitalWrite(SpinMotor, LOW);
-      digitalWrite(ShootMotor, LOW);
-    }
-
-    // Hand LEDs
-    if (R2Mask & payload.sreg) {
-      if (lcount == 16) {
-        count += 1;
-        lcount = 0;
-      } else {
-        lcount += 1;
-      }
-      if (count > 3) {
-        count = 1;
-      }
-      //  tone (SpeakerPin, LaserTone);
-      //  LaserTone += 150;
-      //  if (LaserTone > 2000) {
-      //   LaserTone = 60;
-      //}
-      if (count == 1) {
-        digitalWrite(HandLED1, LOW);
-      }
-      else {
-        digitalWrite(HandLED1, HIGH);
-      }
-      if (count == 2) {
-        digitalWrite(HandLED2, LOW);
-      }
-      else {
-        digitalWrite(HandLED2, HIGH);
-      }
-      if (count == 3) {
-        digitalWrite(HandLED3, LOW);
-      }
-      else {
-        digitalWrite(HandLED3, HIGH);
-      }
-      delay (2);
-      //  noTone (SpeakerPin);
-    }
-    else {
-      digitalWrite(HandLED1, LOW);
-      digitalWrite(HandLED2, LOW);
-      digitalWrite(HandLED3, LOW);
-      // LaserTone = 60;
-    }
-    *\
-
-    // Play sound tracks from the sound card
-
-
-
-
-
     /*
-      soundfile = random(79);
-      if (LDMask & payload.sreg) {
-      wtv020sd16p.stopVoice();
-      wtv020sd16p.asyncPlayVoice(soundfile);
-      Serial.print("Now playing sound file #: ");
-      Serial.println(soundfile);
-      }
-      else {
-      if (B1Mask & payload.sreg) {
-        tone (SpeakerPin, 523);
-        delay (10);
-        noTone (SpeakerPin);
-      }
-      else {
-        noTone (SpeakerPin) ;
-      }
-      if (B2Mask & payload.sreg) {
-        tone (SpeakerPin, 587);
-        delay (10);
-        noTone (SpeakerPin);
-      }
-      else {
-        noTone (SpeakerPin) ;
-      }
-      if (B3Mask & payload.sreg) {
-        tone (SpeakerPin, 659);
-        delay (10);
-        noTone (SpeakerPin);
-      }
-      else {
-        noTone (SpeakerPin) ;
-      }
-      if (B4Mask & payload.sreg) {
-        tone (SpeakerPin, 698);
-        delay (10);
-        noTone (SpeakerPin);
-      }
-      else {
-        noTone (SpeakerPin) ;
-      }
-      noTone (SpeakerPin);
-      }
+        // shoot disk motors
+        if (R1Mask & payload.sreg) {
+          digitalWrite(SpinMotor, HIGH);
+          digitalWrite(ShootMotor, HIGH);
+        }
+        else {
+          digitalWrite(SpinMotor, LOW);
+          digitalWrite(ShootMotor, LOW);
+        }
+
+        // Hand LEDs
+        if (R2Mask & payload.sreg) {
+          if (lcount == 16) {
+            count += 1;
+            lcount = 0;
+          } else {
+            lcount += 1;
+          }
+          if (count > 3) {
+            count = 1;
+          }
+          //  tone (SpeakerPin, LaserTone);
+          //  LaserTone += 150;
+          //  if (LaserTone > 2000) {
+          //   LaserTone = 60;
+          //}
+          if (count == 1) {
+            digitalWrite(HandLED1, LOW);
+          }
+          else {
+            digitalWrite(HandLED1, HIGH);
+          }
+          if (count == 2) {
+            digitalWrite(HandLED2, LOW);
+          }
+          else {
+            digitalWrite(HandLED2, HIGH);
+          }
+          if (count == 3) {
+            digitalWrite(HandLED3, LOW);
+          }
+          else {
+            digitalWrite(HandLED3, HIGH);
+          }
+          delay (2);
+          //  noTone (SpeakerPin);
+        }
+        else {
+          digitalWrite(HandLED1, LOW);
+          digitalWrite(HandLED2, LOW);
+          digitalWrite(HandLED3, LOW);
+          // LaserTone = 60;
+        }
+         \
+
+        // Play sound tracks from the sound card
+
+
+
+
+
+        /*
+          soundfile = random(79);
+          if (LDMask & payload.sreg) {
+          wtv020sd16p.stopVoice();
+          wtv020sd16p.asyncPlayVoice(soundfile);
+          Serial.print("Now playing sound file #: ");
+          Serial.println(soundfile);
+          }
+          else {
+          if (B1Mask & payload.sreg) {
+            tone (SpeakerPin, 523);
+            delay (10);
+            noTone (SpeakerPin);
+          }
+          else {
+            noTone (SpeakerPin) ;
+          }
+          if (B2Mask & payload.sreg) {
+            tone (SpeakerPin, 587);
+            delay (10);
+            noTone (SpeakerPin);
+          }
+          else {
+            noTone (SpeakerPin) ;
+          }
+          if (B3Mask & payload.sreg) {
+            tone (SpeakerPin, 659);
+            delay (10);
+            noTone (SpeakerPin);
+          }
+          else {
+            noTone (SpeakerPin) ;
+          }
+          if (B4Mask & payload.sreg) {
+            tone (SpeakerPin, 698);
+            delay (10);
+            noTone (SpeakerPin);
+          }
+          else {
+            noTone (SpeakerPin) ;
+          }
+          noTone (SpeakerPin);
+          }
     */
 
   }
