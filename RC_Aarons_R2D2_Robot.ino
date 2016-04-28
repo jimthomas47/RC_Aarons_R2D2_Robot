@@ -67,17 +67,7 @@ const int LDMask = 0x4;
 const int LUMask = 0x8;
 const int PushMask = 0x4040; // push either joystick
 
-unsigned int ButtonFlags = 0x0;
-
-#define ON_BUTTON_PRESS(_BUTTON, _EXEC)   \
-  if (_BUTTON & payload.sreg) {           \
-    if ((_BUTTON & ButtonFlags) == 0) {   \
-      _EXEC;                              \
-      ButtonFlags |= _BUTTON;             \
-    }                                     \
-  } else {                                \
-    ButtonFlags &= ~_BUTTON;              \
-  }
+uint16_t PreviousSreg = 0x0000;
 
 int soundPlay = 0;  // holds track number of last sound file played
 
@@ -295,18 +285,56 @@ void loop(void)
     // R2D2 Head turn
     joystick[2] = payload.j_LLR / 2;
 
-    ON_BUTTON_PRESS(B1Mask, mp3.playFileByIndexNumber(1));
-    ON_BUTTON_PRESS(B2Mask, mp3.playFileByIndexNumber(5));
-    ON_BUTTON_PRESS(B3Mask, mp3.playFileByIndexNumber(6));
-    ON_BUTTON_PRESS(B4Mask, mp3.playFileByIndexNumber(7));
-    ON_BUTTON_PRESS(R2Mask, mp3.playFileByIndexNumber(3));
-    ON_BUTTON_PRESS(L2Mask, mp3.playFileByIndexNumber(4));
-    ON_BUTTON_PRESS(LUMask, mp3.playFileByIndexNumber(2));
-    ON_BUTTON_PRESS(LLMask, mp3.playFileByIndexNumber(10));
-    ON_BUTTON_PRESS(LDMask, mp3.playFileByIndexNumber(11));
-    ON_BUTTON_PRESS(LRMask, mp3.playFileByIndexNumber(12));
-    ON_BUTTON_PRESS(L1Mask, mp3.playFileByIndexNumber(8));
-    ON_BUTTON_PRESS(R1Mask, mp3.playFileByIndexNumber(9));
+    uint16_t buttons = payload.sreg & ~PreviousSreg;
+    PreviousSreg = payload.sreg;
+
+    if (buttons & B1Mask) {
+      mp3.playFileByIndexNumber(1);
+    }
+
+    if (buttons & B2Mask) {
+      mp3.playFileByIndexNumber(5);
+    }
+
+    if (buttons & B3Mask) {
+      mp3.playFileByIndexNumber(6);
+    }
+
+    if (buttons & B4Mask) {
+      mp3.playFileByIndexNumber(7);
+    }
+
+    if (buttons & R2Mask) {
+      mp3.playFileByIndexNumber(3);
+    }
+
+    if (buttons & L2Mask) {
+      mp3.playFileByIndexNumber(4);
+    }
+
+    if (buttons & LUMask) {
+      mp3.playFileByIndexNumber(2);
+    }
+
+    if (buttons & LLMask) {
+      mp3.playFileByIndexNumber(10);
+    }
+
+    if (buttons & LDMask) {
+      mp3.playFileByIndexNumber(11);
+    }
+
+    if (buttons & LRMask) {
+      mp3.playFileByIndexNumber(12);
+    }
+
+    if (buttons & L1Mask) {
+      mp3.playFileByIndexNumber(8);
+    }
+
+    if (buttons & R1Mask) {
+      mp3.playFileByIndexNumber(9);
+    }
 
     /*
         // LED Spot Light On / Off
