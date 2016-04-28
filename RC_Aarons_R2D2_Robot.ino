@@ -67,20 +67,17 @@ const int LDMask = 0x4;
 const int LUMask = 0x8;
 const int PushMask = 0x4040; // push either joystick
 
-// used for buttons that make a sound to indicate the button was already detected as pressed
-// B1,B2,B3,B4,R1,R2
-boolean B1Flag = false;
-boolean B2Flag = false;
-boolean B3Flag = false;
-boolean B4Flag = false;
-boolean R1Flag = false;
-boolean R2Flag = false;
-boolean L1Flag = false;
-boolean L2Flag = false;
-boolean LLFlag = false;
-boolean LRFlag = false;
-boolean LDFlag = false;
-boolean LUFlag = false;
+unsigned int ButtonFlags = 0x0;
+
+#define ON_BUTTON_PRESS(_BUTTON, _EXEC)   \
+  if (_BUTTON & payload.sreg) {           \
+    if ((_BUTTON & ButtonFlags) == 0) {   \
+      _EXEC;                              \
+      ButtonFlags |= _BUTTON;             \
+    }                                     \
+  } else {                                \
+    ButtonFlags &= ~_BUTTON;              \
+  }
 
 int soundPlay = 0;  // holds track number of last sound file played
 
@@ -298,112 +295,19 @@ void loop(void)
     // R2D2 Head turn
     joystick[2] = payload.j_LLR / 2;
 
-    // B1 button
-    if (B1Mask & payload.sreg) {  // button pressed
-      if (B1Flag == false) { // just got pressed, play the song
-        mp3.playFileByIndexNumber(1);
-        B1Flag = true; // set the flag showing button was pressed
-      }
-    } else {  // button is released reset the flag
-      B1Flag = false;
-    }
-    // R2D2 on B2 button
-    if (B2Mask & payload.sreg) {  // button pressed
-      if (B2Flag == false) { // just got pressed, play the song
-        mp3.playFileByIndexNumber(5);
-        B2Flag = true; // set the flag showing button was pressed
-      }
-    } else {  // button is released reset the flag
-      B2Flag = false;
-    }
-    // drum solos on B3 button
-    if (B3Mask & payload.sreg) {  // button pressed
-      if (B3Flag == false) { // just got pressed, play the song
-        mp3.playFileByIndexNumber(6);
-        B3Flag = true; // set the flag showing button was pressed
-      }
-    } else {  // button is released reset the flag
-      B3Flag = false;
-    }
-    // random voices on B4 button
-    if (B4Mask & payload.sreg) {  // button pressed
-      if (B4Flag == false) { // just got pressed, play the song
-        mp3.playFileByIndexNumber(7);
-        B4Flag = true; // set the flag showing button was pressed
-      }
-    } else {  // button is released reset the flag
-      B4Flag = false;
-    }
-    //
-    if (R2Mask & payload.sreg) {  // button pressed
-      if (R2Flag == false) { // just got pressed, play the song
-        mp3.playFileByIndexNumber(3);
-        R2Flag = true; // set the flag showing button was pressed
-      }
-    } else {  // button is released reset the flag
-      R2Flag = false;
-    }
-    if (L2Mask & payload.sreg) {  // button pressed
-      if (L2Flag == false) { // just got pressed, play the song
-        mp3.playFileByIndexNumber(4);
-        L2Flag = true; // set the flag showing button was pressed
-      }
-    } else {  // button is released reset the flag
-      L2Flag = false;
-    }
+    ON_BUTTON_PRESS(B1Mask, mp3.playFileByIndexNumber(1));
+    ON_BUTTON_PRESS(B2Mask, mp3.playFileByIndexNumber(5));
+    ON_BUTTON_PRESS(B3Mask, mp3.playFileByIndexNumber(6));
+    ON_BUTTON_PRESS(B4Mask, mp3.playFileByIndexNumber(7));
+    ON_BUTTON_PRESS(R2Mask, mp3.playFileByIndexNumber(3));
+    ON_BUTTON_PRESS(L2Mask, mp3.playFileByIndexNumber(4));
+    ON_BUTTON_PRESS(LUMask, mp3.playFileByIndexNumber(2));
+    ON_BUTTON_PRESS(LLMask, mp3.playFileByIndexNumber(10));
+    ON_BUTTON_PRESS(LDMask, mp3.playFileByIndexNumber(11));
+    ON_BUTTON_PRESS(LRMask, mp3.playFileByIndexNumber(12));
+    ON_BUTTON_PRESS(L1Mask, mp3.playFileByIndexNumber(8));
+    ON_BUTTON_PRESS(R1Mask, mp3.playFileByIndexNumber(9));
 
-    if (LUMask & payload.sreg) {  // button pressed
-      if (LUFlag == false) { // just got pressed, play the song
-        mp3.playFileByIndexNumber(2);
-        LUFlag = true; // set the flag showing button was pressed
-      }
-    } else {  // button is released reset the flag
-      LUFlag = false;
-    }
-
-    if (LLMask & payload.sreg) {  // button pressed
-      if (LLFlag == false) { // just got pressed, play the song
-        mp3.playFileByIndexNumber(10);
-        LLFlag = true; // set the flag showing button was pressed
-      }
-    } else {  // button is released reset the flag
-      LLFlag = false;
-    }
-
-    if (LDMask & payload.sreg) {  // button pressed
-      if (LDFlag == false) { // just got pressed, play the song
-        mp3.playFileByIndexNumber(11);
-        LDFlag = true; // set the flag showing button was pressed
-      }
-    } else {  // button is released reset the flag
-      LDFlag = false;
-    }
-
-    if (LRMask & payload.sreg) {  // button pressed
-      if (LRFlag == false) { // just got pressed, play the song
-        mp3.playFileByIndexNumber(12);
-        LRFlag = true; // set the flag showing button was pressed
-      }
-    } else {  // button is released reset the flag
-      LRFlag = false;
-    }
-
-    if (L1Mask & payload.sreg) {  // button pressed
-      if (L1Flag == false) { // just got pressed, play the song
-        mp3.playFileByIndexNumber(8);
-        L1Flag = true; // set the flag showing button was pressed
-      }
-    } else {  // button is released reset the flag
-      L1Flag = false;
-    }
-    if (R1Mask & payload.sreg) {  // button pressed
-      if (R1Flag == false) { // just got pressed, play the song
-        mp3.playFileByIndexNumber(9);
-        R1Flag = true; // set the flag showing button was pressed
-      }
-    } else {  // button is released reset the flag
-      R1Flag = false;
-    }
     /*
         // LED Spot Light On / Off
         if (LUMask & payload.sreg) {
