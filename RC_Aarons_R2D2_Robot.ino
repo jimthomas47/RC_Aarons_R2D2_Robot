@@ -58,9 +58,9 @@ const uint16_t BUTTON_SHOULDER_LEFT_TOP     = 0x1000;
 const uint16_t BUTTON_SHOULDER_LEFT_BOTTOM  = 0x2000;
 const uint16_t BUTTON_ANALOG_LEFT           = 0x4000;
 // Unused                                     0x8000
-const uint16_t UNUSED_SREGISTER             = 0x8080;
+const uint16_t VALID_SREGISTER_MASK         = ~0x8080;
 
-uint16_t PreviousSreg = 0x0000;
+uint16_t previousSreg = 0x0000;
 
 // structure to hold the payload 10bytes
 struct payload_r {
@@ -229,7 +229,7 @@ void loop(void) {
     radio.read(&payload, sizeof(payload));
 
     // Defensively exclude unused bits from sregister.
-    payload.sreg &= ~UNUSED_SREGISTER;
+    payload.sreg &= VALID_SREGISTER_MASK;
   }
 
   //Serial.println(payload.sreg,BIN);
@@ -272,8 +272,8 @@ void loop(void) {
   // R2D2 Head turn
   joystick[2] = payload.j_LLR / 2;
 
-  uint16_t buttons = payload.sreg & ~PreviousSreg;
-  PreviousSreg = payload.sreg;
+  uint16_t buttons = payload.sreg & ~previousSreg;
+  previousSreg = payload.sreg;
 
   if (buttons & BUTTON_1) {
     mp3.playFileByIndexNumber(1);
