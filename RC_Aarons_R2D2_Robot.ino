@@ -42,14 +42,6 @@ JQ6500_Serial mp3(31, 30);
 
 int joystick[3];
 
-// values to be recieved from the RC controller
-unsigned int s_register; // button states
-int joy_RUD = 0;
-int joy_RLR = 0;
-int joy_LUD = 0;
-int joy_LLR = 0;
-
-
 // masks for each buttons in s_register
 const int R1Mask = 0x10;
 const int R2Mask = 0x20;
@@ -68,9 +60,6 @@ const int LUMask = 0x8;
 const int PushMask = 0x4040; // push either joystick
 
 uint16_t PreviousSreg = 0x0000;
-
-int soundPlay = 0;  // holds track number of last sound file played
-
 
 // structure to hold the payload 10bytes
 struct payload_r {
