@@ -39,27 +39,25 @@
 
 JQ6500_Serial mp3(31, 30);
 
-
 int joystick[3];
 
 // masks for each buttons in s_register
-const uint16_t LLMask    = 0x0001;
-const uint16_t LRMask    = 0x0002;
-const uint16_t LDMask    = 0x0004;
-const uint16_t LUMask    = 0x0008;
-const uint16_t R1Mask    = 0x0010;
-const uint16_t R2Mask    = 0x0020;
-const uint16_t RPushMask = 0x0040;
-// Unused                  0x0080
-const uint16_t B1Mask    = 0x0100;
-const uint16_t B2Mask    = 0x0200;
-const uint16_t B3Mask    = 0x0400;
-const uint16_t B4Mask    = 0x0800;
-const uint16_t L1Mask    = 0x1000;
-const uint16_t L2Mask    = 0x2000;
-const uint16_t LPushMask = 0x4000;
-// Unused                  0x8000
-const uint16_t PushMask  = LPushMask | RPushMask; // push either joystick
+const uint16_t BUTTON_LEFT                  = 0x0001;
+const uint16_t BUTTON_RIGHT                 = 0x0002;
+const uint16_t BUTTON_DOWN                  = 0x0004;
+const uint16_t BUTTON_UP                    = 0x0008;
+const uint16_t BUTTON_SHOULDER_RIGHT_TOP    = 0x0010;
+const uint16_t BUTTON_SHOULDER_RIGHT_BOTTOM = 0x0020;
+const uint16_t BUTTON_ANALOG_RIGHT          = 0x0040;
+// Unused                                     0x0080
+const uint16_t BUTTON_1                     = 0x0100;
+const uint16_t BUTTON_2                     = 0x0200;
+const uint16_t BUTTON_3                     = 0x0400;
+const uint16_t BUTTON_4                     = 0x0800;
+const uint16_t BUTTON_SHOULDER_LEFT_TOP     = 0x1000;
+const uint16_t BUTTON_SHOULDER_LEFT_BOTTOM  = 0x2000;
+const uint16_t BUTTON_ANALOG_LEFT           = 0x4000;
+// Unused                                     0x8000
 
 uint16_t PreviousSreg = 0x0000;
 
@@ -273,52 +271,52 @@ void loop(void) {
   uint16_t buttons = payload.sreg & ~PreviousSreg;
   PreviousSreg = payload.sreg;
 
-  if (buttons & B1Mask) {
+  if (buttons & BUTTON_1) {
     mp3.playFileByIndexNumber(1);
   }
 
-  if (buttons & B2Mask) {
+  if (buttons & BUTTON_2) {
     mp3.playFileByIndexNumber(5);
   }
 
-  if (buttons & B3Mask) {
+  if (buttons & BUTTON_3) {
     mp3.playFileByIndexNumber(6);
   }
 
-  if (buttons & B4Mask) {
+  if (buttons & BUTTON_4) {
     mp3.playFileByIndexNumber(7);
   }
 
-  if (buttons & R2Mask) {
-    mp3.playFileByIndexNumber(3);
-  }
-
-  if (buttons & L2Mask) {
-    mp3.playFileByIndexNumber(4);
-  }
-
-  if (buttons & LUMask) {
+  if (buttons & BUTTON_UP) {
     mp3.playFileByIndexNumber(2);
   }
 
-  if (buttons & LLMask) {
+  if (buttons & BUTTON_LEFT) {
     mp3.playFileByIndexNumber(10);
   }
 
-  if (buttons & LDMask) {
+  if (buttons & BUTTON_DOWN) {
     mp3.playFileByIndexNumber(11);
   }
 
-  if (buttons & LRMask) {
+  if (buttons & BUTTON_RIGHT) {
     mp3.playFileByIndexNumber(12);
   }
 
-  if (buttons & L1Mask) {
+  if (buttons & BUTTON_SHOULDER_RIGHT_TOP) {
+    mp3.playFileByIndexNumber(9);
+  }
+
+  if (buttons & BUTTON_SHOULDER_RIGHT_BOTTOM) {
+    mp3.playFileByIndexNumber(3);
+  }
+
+  if (buttons & BUTTON_SHOULDER_LEFT_TOP) {
     mp3.playFileByIndexNumber(8);
   }
 
-  if (buttons & R1Mask) {
-    mp3.playFileByIndexNumber(9);
+  if (buttons & BUTTON_SHOULDER_LEFT_BOTTOM) {
+    mp3.playFileByIndexNumber(4);
   }
 
   /*
