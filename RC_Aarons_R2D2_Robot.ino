@@ -110,6 +110,10 @@ const int RmotorPower [7][7] = {
   { 255,  255,  255,  255,  200,  150,    0 }
 };
 
+int16_t joystickRange(int16_t value) {
+  return min(-255, max(255, value));
+}
+
 void setup(void) {
   Serial.begin(9600);
   printf_begin();
@@ -157,6 +161,12 @@ void loop(void) {
 
     // Defensively exclude unused bits from sregister.
     payload.sreg &= VALID_SREGISTER_MASK;
+
+    // Check that joystick values are in the expected range
+    payload.j_RLR = joystickRange(payload.j_RLR);
+    payload.j_RUD = joystickRange(payload.j_RUD);
+    payload.j_LLR = joystickRange(payload.j_LLR);
+    payload.j_LUD = joystickRange(payload.j_LUD);
   }
 
   // quantize joystick values 0-6
