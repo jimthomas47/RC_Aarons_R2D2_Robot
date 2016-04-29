@@ -34,8 +34,6 @@
 
 JQ6500_Serial mp3(31, 30);
 
-int joystick[3];
-
 // masks for each buttons in s_register
 const uint16_t BUTTON_LEFT                  = 0x0001;
 const uint16_t BUTTON_RIGHT                 = 0x0002;
@@ -187,15 +185,15 @@ void loop(void) {
   else y = 6;
 
   // lookup motor power values from the motor power table
-  joystick[0] = LmotorPower[y][x];
-  joystick[1] = RmotorPower[y][x];
+  int leftMotorPower = LmotorPower[y][x];
+  int rightMotorPower = RmotorPower[y][x];
 
-  Serial.print(joystick[0]);
+  Serial.print(leftMotorPower);
   Serial.print(' ');
-  Serial.println(joystick[1]);
+  Serial.println(rightMotorPower);
 
   // R2D2 Head turn
-  joystick[2] = payload.j_LLR / 2;
+  int headMotorPower = payload.j_LLR / 2;
 
   uint16_t buttons = payload.sreg & ~previousSreg;
   previousSreg = payload.sreg;
@@ -249,13 +247,13 @@ void loop(void) {
   }
 
   // left (port) motor
-  if (joystick[0] > 0) {      // forward
-    analogWrite(LmotorPinF, joystick[0]);
+  if (leftMotorPower > 0) {      // forward
+    analogWrite(LmotorPinF, leftMotorPower);
     digitalWrite(LmotorPinR, LOW);
   }
-  else if (joystick[0] < 0) { //reverse
+  else if (leftMotorPower < 0) { //reverse
     digitalWrite(LmotorPinF, LOW);
-    analogWrite(LmotorPinR, -joystick[0]);
+    analogWrite(LmotorPinR, -leftMotorPower);
   }
   else {
     digitalWrite(LmotorPinF, LOW); // stopped
@@ -263,13 +261,13 @@ void loop(void) {
   }
 
   // right (starbord) motor
-  if (joystick[1] > 0) {      // forward
-    analogWrite(RmotorPinF, joystick[1]);
+  if (rightMotorPower > 0) {      // forward
+    analogWrite(RmotorPinF, rightMotorPower);
     digitalWrite(RmotorPinR, LOW);
   }
-  else if (joystick[1] < 0) { //reverse
+  else if (rightMotorPower < 0) { //reverse
     digitalWrite(RmotorPinF, LOW);
-    analogWrite(RmotorPinR, -joystick[1]);
+    analogWrite(RmotorPinR, -rightMotorPower);
   }
   else {
     digitalWrite(RmotorPinF, LOW); // stopped
@@ -277,12 +275,12 @@ void loop(void) {
   }
 
   //R2D2 Head motor
-  if (joystick[2] >= 0) {
-    analogWrite(HmotorPinF, joystick[2]);
+  if (headMotorPower >= 0) {
+    analogWrite(HmotorPinF, headMotorPower);
     digitalWrite(HmotorPinR, LOW);
   }
   else {
     digitalWrite(HmotorPinF, LOW);
-    analogWrite(HmotorPinR, -joystick[2]);
+    analogWrite(HmotorPinR, -headMotorPower);
   }
 }
