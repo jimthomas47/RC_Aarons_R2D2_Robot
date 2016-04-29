@@ -57,14 +57,18 @@ const uint16_t VALID_SREGISTER_MASK         = ~0x8080;
 
 uint16_t previousSreg = 0x0000;
 
-// structure to hold the payload 10bytes
-struct payload_r {
+// Structure to hold the payload received over the radio from the
+// remote control.
+struct RemoteControlPayload {
   uint16_t sreg;
   int16_t j_RUD;
   int16_t j_RLR;
   int16_t j_LUD;
   int16_t j_LLR;
 };
+
+static_assert(sizeof(RemoteControlPayload) == 10,
+              "Payload size must match remote control. Anything else can cause problems.");
 
 /* NRF 24L01+ pin connections for Mega
   pin 53 CE; pin 48 CSN; pin 51 MOSI; pin 52 SCK; pin 50 MISO
@@ -139,7 +143,7 @@ void setup(void) {
   radio.begin();
   radio.setChannel(0x4F); // change from default setting (0x4C) to avoid interference
   radio.setDataRate(RF24_250KBPS);  // slow data rate for better reliability
-  radio.setPayloadSize(10);  // 10 byte payload
+  radio.setPayloadSize(sizeof(RemoteControlPayload));
   radio.openReadingPipe(1, pipe);
   radio.startListening();
   radio.printDetails();
@@ -149,10 +153,10 @@ void setup(void) {
 
 void loop(void) {
   int x, y;
-  payload_r payload = {0, 0, 0, 0, 0};
+  RemoteControlPayload payload = {0, 0, 0, 0, 0};
 
   if (radio.available()) {
-    radio.read(&payload, sizeof(payload));
+    radio.read(&payload, sizeof(RemoteControlPayload));
 
     // Defensively exclude unused bits from sregister.
     payload.sreg &= VALID_SREGISTER_MASK;
