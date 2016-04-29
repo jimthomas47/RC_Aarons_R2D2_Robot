@@ -262,7 +262,7 @@ void loop(void) {
     digitalWrite(LmotorPinF, LOW); // stopped
     digitalWrite(LmotorPinR, LOW);
   }
-  
+
   // right (starbord) motor
   if (joystick[1] > 0) {      // forward
     analogWrite(RmotorPinF, joystick[1]);
