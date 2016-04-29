@@ -27,15 +27,10 @@
   Released into the public domain.
 */
 
-#include <SPI.h>
-#include "nRF24L01.h"
-#include "RF24.h"
-#include "printf.h"
-#include <Servo.h>
-
-#include <Arduino.h>
-#include <SoftwareSerial.h>
+#include <RF24.h>
 #include <JQ6500_Serial.h>
+
+#include "printf.h"
 
 JQ6500_Serial mp3(31, 30);
 
