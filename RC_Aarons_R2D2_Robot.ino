@@ -78,13 +78,38 @@ const uint64_t pipe = 0xE8E8F0F0E1LL;
 /*  Motor Drive Controller Board Module L298N Dual H Bridge
   connections to Ardunio pwm capable Outputs...
 */
-const int RmotorPinF = 3;  // Right Forward connect to MC board in
-const int RmotorPinR = 2;  // Right Reverse connect to MC board in
-const int LmotorPinF = 4;  // Left Forward connect to MC board in
-const int LmotorPinR = 5;  // Left Reverse connect to MC board in
+class Motor {
+private:
+  const int _forwardPin;
+  const int _reversePin;
 
-const int HmotorPinF = 10; // R2D2 head turn
-const int HmotorPinR = 11; // R2D2 head turn
+public:
+  Motor(const int forwardPin, const int reversePin)
+    : _forwardPin(forwardPin), _reversePin(reversePin) {
+  }
+
+  void setup() {
+    pinMode(_forwardPin, OUTPUT);
+    digitalWrite(_forwardPin, LOW);
+
+    pinMode(_reversePin, OUTPUT);
+    digitalWrite(_reversePin, LOW);
+  }
+
+  void setPower(const int16_t value) {
+    if (value > 0) {
+      analogWrite(_forwardPin, value);
+      digitalWrite(_reversePin, LOW);
+    } else {
+      digitalWrite(_forwardPin, LOW);
+      analogWrite(_reversePin, -value);
+    }
+  }
+};
+
+Motor rightLeg(3, 2);
+Motor leftLeg(4, 5);
+Motor head(10, 11);
 
 const int16_t MOTOR_MAX_POWER = 255;
 const float POWER_PER_RADIAN = 324.675324675;
@@ -97,21 +122,10 @@ void setup(void) {
   Serial.begin(9600);
   printf_begin();
 
-  // motor pins as outputs, and motors off: set to 0V = LOW
-  pinMode (RmotorPinF, OUTPUT);
-  pinMode (RmotorPinR, OUTPUT);
-  pinMode (LmotorPinF, OUTPUT);
-  pinMode (LmotorPinR, OUTPUT);
-  digitalWrite(RmotorPinF, LOW);
-  digitalWrite(RmotorPinR, LOW);
-  digitalWrite(LmotorPinF, LOW);
-  digitalWrite(LmotorPinF, LOW);
-
-  // R2D2 head motor
-  pinMode (HmotorPinF, OUTPUT);
-  pinMode (HmotorPinR, OUTPUT);
-  digitalWrite(HmotorPinF, LOW);
-  digitalWrite(HmotorPinR, LOW);
+  // Motors
+  leftLeg.setup();
+  rightLeg.setup();
+  head.setup();
 
   // JQ6500
   mp3.begin(9600);
@@ -148,7 +162,7 @@ void loop(void) {
   }
 
   updateLegMotors(payload.j_RLR, payload.j_RUD);
-  writeMotor(HmotorPinF, HmotorPinR, payload.j_LLR / 2);
+  head.setPower(payload.j_LLR / 2);
 
   if (previousSreg != payload.sreg) {
     updateButtons(payload.sreg & ~previousSreg);
@@ -238,17 +252,6 @@ void updateLegMotors(int16_t horizontal, int16_t vertical) {
     }
   }
 
-  writeMotor(RmotorPinF, RmotorPinR, right);
-  writeMotor(LmotorPinF, LmotorPinR, left);
+  rightLeg.setPower(right);
+  leftLeg.setPower(left);
 }
-
-void writeMotor(int pinForward, int pinReverse, int16_t power) {
-  if (power > 0) {
-    analogWrite(pinForward, power);
-    digitalWrite(pinReverse, LOW);
-  } else {
-    digitalWrite(pinForward, LOW);
-    analogWrite(pinReverse, -power);
-  }
-}
-
