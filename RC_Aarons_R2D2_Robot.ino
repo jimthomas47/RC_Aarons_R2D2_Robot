@@ -29,6 +29,7 @@
 
 #include <RF24.h>
 #include <JQ6500_Serial.h>
+#include <math.h>
 
 #include "printf.h"
 
@@ -85,30 +86,11 @@ const int LmotorPinR = 5;  // Left Reverse connect to MC board in
 const int HmotorPinF = 10; // R2D2 head turn
 const int HmotorPinR = 11; // R2D2 head turn
 
-// arrays of constants to convert tractor drive to joystick drive
-// lookup motorPower = [j_RUD][j_RLR]
-// 6x6 version
-const int LmotorPower [7][7] = {
-  { -255, -255, -255, -255, -200, -150,   0 },
-  { -255, -200, -200, -200, -150,    0, 150 },
-  { -255, -200, -150, -150,    0,  150, 200 },
-  { -255, -200, -150,    0,  150,  200, 255 },
-  { -200, -150,    0,  150,  150,  200, 255 },
-  { -100,    0,  100,  200,  200,  200, 255 },
-  {    0,  150,  200,  255,  255,  255, 255 }
-};
-const int RmotorPower [7][7] = {
-  {   0, -150, -200, -255, -255, -255, -255 },
-  { 150,    0, -150, -200, -200, -200, -255 },
-  { 200,  150,    0, -150, -150, -200, -255 },
-  { 255,  200,  150,    0, -150, -200, -255 },
-  { 255,  200,  150,  150,    0, -150, -200 },
-  { 255,  200,  200,  200,  150,    0, -150 },
-  { 255,  255,  255,  255,  200,  150,    0 }
-};
+const int16_t MOTOR_MAX_POWER = 255;
+const float POWER_PER_RADIAN = 324.675324675;
 
 int16_t joystickRange(int16_t value) {
-  return min(-255, max(255, value));
+  return min(-MOTOR_MAX_POWER, max(MOTOR_MAX_POWER, value));
 }
 
 void setup(void) {
@@ -150,7 +132,6 @@ void setup(void) {
 }
 
 void loop(void) {
-  int x, y;
   RemoteControlPayload payload = {0, 0, 0, 0, 0};
 
   if (radio.available()) {
@@ -166,34 +147,8 @@ void loop(void) {
     payload.j_LUD = joystickRange(payload.j_LUD);
   }
 
-  // quantize joystick values 0-6
-
-  if (-payload.j_RLR < -200)     x = 0;
-  else if (-payload.j_RLR < -150)x = 1;
-  else if (-payload.j_RLR < -10) x = 2;
-  else if (-payload.j_RLR < 10)  x = 3;
-  else if (-payload.j_RLR < 150) x = 4;
-  else if (-payload.j_RLR < 200) x = 5;
-  else x = 6;
-
-  if (payload.j_RUD < -200)     y = 0;
-  else if (payload.j_RUD < -150)y = 1;
-  else if (payload.j_RUD < -10) y = 2;
-  else if (payload.j_RUD < 10)  y = 3;
-  else if (payload.j_RUD < 150) y = 4;
-  else if (payload.j_RUD < 200) y = 5;
-  else y = 6;
-
-  // lookup motor power values from the motor power table
-  int leftMotorPower = LmotorPower[y][x];
-  int rightMotorPower = RmotorPower[y][x];
-
-  Serial.print(leftMotorPower);
-  Serial.print(' ');
-  Serial.println(rightMotorPower);
-
-  // R2D2 Head turn
-  int headMotorPower = payload.j_LLR / 2;
+  updateLegMotors(payload.j_RLR, payload.j_RUD);
+  writeMotor(HmotorPinF, HmotorPinR, payload.j_LLR / 2);
 
   uint16_t buttons = payload.sreg & ~previousSreg;
   previousSreg = payload.sreg;
@@ -245,42 +200,51 @@ void loop(void) {
   if (buttons & BUTTON_SHOULDER_LEFT_BOTTOM) {
     mp3.playFileByIndexNumber(4);
   }
+}
 
-  // left (port) motor
-  if (leftMotorPower > 0) {      // forward
-    analogWrite(LmotorPinF, leftMotorPower);
-    digitalWrite(LmotorPinR, LOW);
-  }
-  else if (leftMotorPower < 0) { //reverse
-    digitalWrite(LmotorPinF, LOW);
-    analogWrite(LmotorPinR, -leftMotorPower);
-  }
-  else {
-    digitalWrite(LmotorPinF, LOW); // stopped
-    digitalWrite(LmotorPinR, LOW);
+void updateLegMotors(int16_t horizontal, int16_t vertical) {
+  float power1 = min(hypot(horizontal, vertical), MOTOR_MAX_POWER);
+  int16_t left = power1;
+  int16_t right = power1;
+
+  if (horizontal == 0) {
+    if (vertical < 0) {
+      left = -power1;
+      right = -power1;
+    }
+  } else {
+    float power2 = (atan(abs((float) vertical / (float) horizontal)) * POWER_PER_RADIAN - MOTOR_MAX_POWER) * (power1 / MOTOR_MAX_POWER);
+
+    if (horizontal >= 0) {
+      if (vertical >= 0) {
+        left = power1;
+        right = power2;
+      } else {
+        left = -power2;
+        right = -power1;
+      }
+    } else {
+      if (vertical >= 0) {
+        left = power2;
+        right = power1;
+      } else {
+        left = -power1;
+        right = -power2;
+      }
+    }
   }
 
-  // right (starbord) motor
-  if (rightMotorPower > 0) {      // forward
-    analogWrite(RmotorPinF, rightMotorPower);
-    digitalWrite(RmotorPinR, LOW);
-  }
-  else if (rightMotorPower < 0) { //reverse
-    digitalWrite(RmotorPinF, LOW);
-    analogWrite(RmotorPinR, -rightMotorPower);
-  }
-  else {
-    digitalWrite(RmotorPinF, LOW); // stopped
-    digitalWrite(RmotorPinR, LOW);
-  }
+  writeMotor(RmotorPinF, RmotorPinR, right);
+  writeMotor(LmotorPinF, LmotorPinR, left);
+}
 
-  //R2D2 Head motor
-  if (headMotorPower >= 0) {
-    analogWrite(HmotorPinF, headMotorPower);
-    digitalWrite(HmotorPinR, LOW);
-  }
-  else {
-    digitalWrite(HmotorPinF, LOW);
-    analogWrite(HmotorPinR, -headMotorPower);
+void writeMotor(int pinForward, int pinReverse, int16_t power) {
+  if (power > 0) {
+    analogWrite(pinForward, power);
+    digitalWrite(pinReverse, LOW);
+  } else {
+    digitalWrite(pinForward, LOW);
+    analogWrite(pinReverse, -power);
   }
 }
+
