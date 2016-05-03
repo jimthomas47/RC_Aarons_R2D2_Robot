@@ -150,9 +150,13 @@ void loop(void) {
   updateLegMotors(payload.j_RLR, payload.j_RUD);
   writeMotor(HmotorPinF, HmotorPinR, payload.j_LLR / 2);
 
-  uint16_t buttons = payload.sreg & ~previousSreg;
-  previousSreg = payload.sreg;
+  if (previousSreg != payload.sreg) {
+    updateButtons(payload.sreg & ~previousSreg);
+    previousSreg = payload.sreg;
+  }
+}
 
+void updateButtons(uint16_t buttons) {
   if (buttons & BUTTON_1) {
     mp3.playFileByIndexNumber(1);
   }
