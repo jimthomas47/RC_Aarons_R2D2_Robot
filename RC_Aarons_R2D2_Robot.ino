@@ -114,8 +114,13 @@ Motor head(10, 11);
 const int16_t MOTOR_MAX_POWER = 255;
 const float POWER_PER_RADIAN = 324.675324675;
 
-int16_t joystickRange(int16_t value) {
-  return min(-MOTOR_MAX_POWER, max(MOTOR_MAX_POWER, value));
+int16_t normalizeJoystick(int16_t value) {
+  // Attempt to support poorly calibrated joysticks
+  if (value <= 15 && value >= -15) {
+    return 0;
+  }
+
+  return constrain(value, -MOTOR_MAX_POWER, MOTOR_MAX_POWER);
 }
 
 void setup(void) {
@@ -155,10 +160,10 @@ void loop(void) {
     payload.sreg &= VALID_SREGISTER_MASK;
 
     // Check that joystick values are in the expected range
-    payload.j_RLR = joystickRange(payload.j_RLR);
-    payload.j_RUD = joystickRange(payload.j_RUD);
-    payload.j_LLR = joystickRange(payload.j_LLR);
-    payload.j_LUD = joystickRange(payload.j_LUD);
+    payload.j_RLR = normalizeJoystick(payload.j_RLR);
+    payload.j_RUD = normalizeJoystick(payload.j_RUD);
+    payload.j_LLR = normalizeJoystick(payload.j_LLR);
+    payload.j_LUD = normalizeJoystick(payload.j_LUD);
   }
 
   updateLegMotors(payload.j_RLR, payload.j_RUD);
