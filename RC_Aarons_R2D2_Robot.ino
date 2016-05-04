@@ -96,7 +96,7 @@ public:
     digitalWrite(_reversePin, LOW);
   }
 
-  void setPower(const int16_t value) {
+  void write(const int16_t value) {
     if (value > 0) {
       analogWrite(_forwardPin, value);
       digitalWrite(_reversePin, LOW);
@@ -167,7 +167,7 @@ void loop(void) {
   }
 
   updateLegMotors(payload.j_RLR, payload.j_RUD);
-  head.setPower(payload.j_LLR / 2);
+  head.write(payload.j_LLR / 2);
 
   if (previousSreg != payload.sreg) {
     updateButtons(payload.sreg & ~previousSreg);
@@ -257,6 +257,6 @@ void updateLegMotors(int16_t horizontal, int16_t vertical) {
     }
   }
 
-  rightLeg.setPower(right);
-  leftLeg.setPower(left);
+  rightLeg.write(right);
+  leftLeg.write(left);
 }
