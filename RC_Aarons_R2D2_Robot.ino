@@ -160,9 +160,9 @@ void loop(void) {
     payload.sreg &= VALID_SREGISTER_MASK;
 
     // Check that joystick values are in the expected range
-    payload.j_RLR = normalizeJoystick(payload.j_RLR);
+    payload.j_RLR = normalizeJoystick(-payload.j_RLR);
     payload.j_RUD = normalizeJoystick(payload.j_RUD);
-    payload.j_LLR = normalizeJoystick(payload.j_LLR);
+    payload.j_LLR = normalizeJoystick(-payload.j_LLR);
     payload.j_LUD = normalizeJoystick(payload.j_LUD);
   }
 
