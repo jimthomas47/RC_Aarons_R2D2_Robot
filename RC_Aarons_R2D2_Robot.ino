@@ -166,6 +166,7 @@ void loop(void) {
     payload.j_LUD = normalizeJoystick(payload.j_LUD);
   }
 
+  printf("head: %d, hor: %d, vert: %d\n", payload.j_LLR, payload.j_RLR, payload.j_RUD);
   updateLegMotors(payload.j_RLR, payload.j_RUD);
   head.write(payload.j_LLR / 2);
 
